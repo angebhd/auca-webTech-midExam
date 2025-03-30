@@ -3,6 +3,8 @@ package com.angebhd.studentManagement.model;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -45,6 +47,7 @@ public class Fees {
     /*  */
     @OneToOne
     @JoinColumn(name = "registration_id")
+    @JsonIgnore
     private StudentRegistration registration;
 
 }

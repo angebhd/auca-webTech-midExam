@@ -32,7 +32,7 @@ public class Grades {
     private UUID id;
 
     @Column(name = "grade")
-    private byte grade;
+    private double grade;
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)

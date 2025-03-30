@@ -5,6 +5,8 @@ import java.time.Year;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -45,9 +47,11 @@ public class Semester {
     /*  */
 
     @OneToMany(mappedBy = "semester", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<StudentRegistration> registrations;
 
     @OneToMany(mappedBy = "semester", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<OfferedCourse> courses;
 
 }

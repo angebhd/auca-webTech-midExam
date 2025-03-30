@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.angebhd.studentManagement.model.enumeration.EAcademicUnitType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -54,9 +55,12 @@ public class AcademicUnit {
     /*  */
 
     @OneToMany(mappedBy = "department")
+    @JsonIgnore
     private List<Student> students;
 
     @OneToMany(mappedBy = "academicUnit")
+    // @JsonManagedReference
+    @JsonIgnore
     private List<Course> courses;
 
 

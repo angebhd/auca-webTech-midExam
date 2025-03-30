@@ -5,6 +5,8 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -46,14 +48,16 @@ public class OfferedCourse {
     private String room;
 
     @Column(name = "capacity")
-    private byte size;
+    private int size;
 
     /*  */
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Grades> grades;
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Attendance> attendance;
 
     /*  */

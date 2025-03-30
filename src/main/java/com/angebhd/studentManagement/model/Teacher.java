@@ -4,12 +4,15 @@ package com.angebhd.studentManagement.model;
 
 import com.angebhd.studentManagement.model.enumeration.ETeacherQualifications;
 import com.angebhd.studentManagement.model.enumeration.ETeacherRole;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -29,7 +32,9 @@ import java.util.UUID;
 public class Teacher {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
     @Column(name = "first_name")
     private String firstName;
 
@@ -61,5 +66,6 @@ public class Teacher {
     /*  */
 
     @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<OfferedCourse> courses;
 }

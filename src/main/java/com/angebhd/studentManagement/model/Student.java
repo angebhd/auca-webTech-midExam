@@ -8,6 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -44,13 +47,14 @@ public class Student {
     @Column(name = "enrollment_date")
     private LocalDate enrollmentDate;
 
-    
-
     @Column(name = "status")
     private EStudentStatus status;
 
     @Column(name = "program")
     private EStudentProgram program;
+
+    @Column(name = "gpa")
+    private double gpa = 0;
 
     @Column(name = "password")
     private String password;
@@ -65,17 +69,24 @@ public class Student {
     /*  */
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<StudentRegistration> registrations;
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Payment> payments;
 
     @OneToMany(mappedBy ="student", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Grades> grades;
 
     @OneToMany(mappedBy ="student", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Fees> fees;
     
     @OneToMany(mappedBy ="student", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Attendance> attendances;
+
+   
 }

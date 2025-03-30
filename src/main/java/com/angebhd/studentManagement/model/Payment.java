@@ -36,6 +36,9 @@ public class Payment {
     @Enumerated(EnumType.STRING)
     private EPaymentMode paymentMode;
 
+    @Column(name = "transaction_id")
+    private String transactionId;
+
     @Column(name = "date")
     private LocalDate date;
 

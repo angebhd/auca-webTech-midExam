@@ -8,5 +8,6 @@ import com.angebhd.studentManagement.model.Course;
 
 public interface CourseRepository extends JpaRepository<Course, UUID>{
 
+    boolean existsByCode(String code);
     
 }

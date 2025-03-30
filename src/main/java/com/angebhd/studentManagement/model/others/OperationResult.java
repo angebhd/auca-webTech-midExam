@@ -1,14 +1,10 @@
 package com.angebhd.studentManagement.model.others;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Setter
 @Getter
-
 public class OperationResult {
 
     private String message;
@@ -20,4 +16,6 @@ public class OperationResult {
     }
 
     public OperationResult(){}
+
+
 }
