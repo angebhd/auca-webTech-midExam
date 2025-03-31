@@ -6,12 +6,13 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.angebhd.studentManagement.DTO.OperationResult;
 import com.angebhd.studentManagement.model.AcademicUnit;
 import com.angebhd.studentManagement.model.Student;
 import com.angebhd.studentManagement.model.enumeration.EAcademicUnitType;
-import com.angebhd.studentManagement.model.others.OperationResult;
 import com.angebhd.studentManagement.repository.AcademicUnitRepository;
 import com.angebhd.studentManagement.repository.StudentRepository;
 
@@ -23,6 +24,8 @@ public class StudentService {
 
     @Autowired
     private AcademicUnitRepository academicUnitRepository;
+
+    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(8);
 
     public OperationResult add(Student student, String code) {
         Optional<AcademicUnit> department = academicUnitRepository.findByCode(code);
@@ -59,6 +62,8 @@ public class StudentService {
     public OperationResult update(Student student) {
         Optional<Student> st = studentRepository.findById(student.getId());
         if (st.isPresent()) {
+            student.setPassword(encoder.encode(student.getPassword()));
+
             studentRepository.save(student);
             return new OperationResult(true, "Student updated successfully");
 

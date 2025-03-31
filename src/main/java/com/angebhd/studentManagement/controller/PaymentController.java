@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.angebhd.studentManagement.DTO.OperationResult;
 import com.angebhd.studentManagement.controller.other.GenericController;
 import com.angebhd.studentManagement.model.Payment;
-import com.angebhd.studentManagement.model.others.OperationResult;
 import com.angebhd.studentManagement.service.PaymentService;
 
 @RestController

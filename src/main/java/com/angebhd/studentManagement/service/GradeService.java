@@ -8,12 +8,13 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.angebhd.studentManagement.DTO.GradeFormat;
+import com.angebhd.studentManagement.DTO.OperationResult;
 import com.angebhd.studentManagement.model.Grades;
 import com.angebhd.studentManagement.model.OfferedCourse;
 import com.angebhd.studentManagement.model.Student;
 import com.angebhd.studentManagement.model.enumeration.EGradeStatus;
-import com.angebhd.studentManagement.model.others.GradeFormat;
-import com.angebhd.studentManagement.model.others.OperationResult;
+
 import com.angebhd.studentManagement.repository.GradesRepository;
 import com.angebhd.studentManagement.repository.OfferedCourseRepository;
 import com.angebhd.studentManagement.repository.StudentRepository;

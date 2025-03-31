@@ -6,8 +6,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.angebhd.studentManagement.DTO.OperationResult;
 import com.angebhd.studentManagement.model.AcademicUnit;
-import com.angebhd.studentManagement.model.others.OperationResult;
 import com.angebhd.studentManagement.repository.AcademicUnitRepository;
 
 @Service
