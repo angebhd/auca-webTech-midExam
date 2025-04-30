@@ -6,8 +6,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.angebhd.studentManagement.DTO.OperationResult;
 import com.angebhd.studentManagement.model.Semester;
-import com.angebhd.studentManagement.model.others.OperationResult;
 import com.angebhd.studentManagement.repository.SemesterRepository;
 
 @Service
@@ -44,6 +44,7 @@ public class SemesterService {
             newSem.setStartDate(semester.getStartDate());
             newSem.setEndDate(semester.getEndDate());
             newSem.setYear(semester.getYear());
+            newSem.setStatus(semester.getStatus());
 
             semesterRepository.save(newSem);
 

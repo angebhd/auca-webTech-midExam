@@ -1,0 +1,67 @@
+package com.angebhd.studentManagement.config;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.angebhd.studentManagement.DTO.FrontEnd;
+import com.angebhd.studentManagement.service.UsersDetailsOauth2Services;
+import com.angebhd.studentManagement.service.UsersDetailsService;
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+    private FrontEnd frontEnd = new FrontEnd();
+
+    @Autowired
+    private UsersDetailsService usersDetailsService;
+
+    @Autowired
+    private UsersDetailsOauth2Services usersDetailsOauth2Services;
+
+    @Autowired
+    private JWTFilter jwtFilter;
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        return http
+                .csrf(customizer -> customizer.disable())
+                // .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)) // shall try .NEVER
+                .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                .authorizeHttpRequests(au -> au
+                        .requestMatchers("/auth/login", "/auth/register").permitAll()
+                        .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll() // for Oauth2
+                        .anyRequest().permitAll())
+                .formLogin(form -> form.disable())
+                .oauth2Login(oauth -> oauth
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(usersDetailsOauth2Services))
+                        .defaultSuccessUrl(frontEnd.getIp() + "auth/oauth2/success", true))
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
+    }
+
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setPasswordEncoder(new BCryptPasswordEncoder(8));
+        provider.setUserDetailsService(usersDetailsService);
+        return provider;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
+    }
+
+}

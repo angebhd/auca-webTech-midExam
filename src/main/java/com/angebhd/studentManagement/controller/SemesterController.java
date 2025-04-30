@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.angebhd.studentManagement.DTO.OperationResult;
 import com.angebhd.studentManagement.model.Semester;
-import com.angebhd.studentManagement.model.others.OperationResult;
 import com.angebhd.studentManagement.service.SemesterService;
 
 @RestController

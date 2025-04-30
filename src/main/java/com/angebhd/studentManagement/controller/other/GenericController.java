@@ -3,7 +3,8 @@ package com.angebhd.studentManagement.controller.other;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.angebhd.studentManagement.model.others.OperationResult;
+import com.angebhd.studentManagement.DTO.OperationResult;
+
 
 public class GenericController {
 
