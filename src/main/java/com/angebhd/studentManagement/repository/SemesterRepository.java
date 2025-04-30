@@ -6,11 +6,12 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.angebhd.studentManagement.model.Semester;
+import com.angebhd.studentManagement.model.enumeration.ESemesterName;
 
 
 public interface SemesterRepository extends JpaRepository<Semester, UUID>{
 
-    boolean existsByYearAndName(Year year, String name);
+    boolean existsByYearAndName(Year year, ESemesterName name);
 
     
 }

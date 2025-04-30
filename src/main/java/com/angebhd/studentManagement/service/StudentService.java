@@ -28,10 +28,18 @@ public class StudentService {
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(8);
 
     public OperationResult add(Student student, String code) {
+
+
         Optional<AcademicUnit> department = academicUnitRepository.findByCode(code);
 
         if (department.isPresent()) {
             if (department.get().getType().equals(EAcademicUnitType.DEPARTMENT)) {
+                // student.setPassword(encoder.encode(student.getPassword()));
+                Optional<Student> exist = studentRepository.findByEmail(student.getEmail());
+                if (exist.isPresent()) {
+                    return new OperationResult(false, "Student with email " + student.getEmail()+ " already exist");
+
+                }
                 student.setDepartment(department.get());
                 student.setEnrollmentDate(LocalDate.now());
 
@@ -59,10 +67,19 @@ public class StudentService {
         return null;
     }
 
-    public OperationResult update(Student student) {
+    public OperationResult update(Student student, String departmentCode) {
         Optional<Student> st = studentRepository.findById(student.getId());
         if (st.isPresent()) {
-            student.setPassword(encoder.encode(student.getPassword()));
+            Optional<AcademicUnit> department = academicUnitRepository.findByCode(departmentCode);
+            if (department.isPresent()) {
+                student.setDepartment(department.get());
+            }else{
+                return new OperationResult(false, "Departement not found");
+            }
+            if (student.getPassword() != null) {
+                student.setPassword(encoder.encode(student.getPassword()));
+            }else{student.setPassword(st.get().getPassword());          }
+
 
             studentRepository.save(student);
             return new OperationResult(true, "Student updated successfully");

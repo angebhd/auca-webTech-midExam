@@ -41,7 +41,7 @@ public class AuthenticationService {
                 Student student = st.get();
                 if (encoder.matches(req.getPassword(), student.getPassword())) {
                     String token = jwtUtilities.generateToken(student.getEmail());
-                    return new LoginResponse(true, token, "STUDENT", "Successfully logged in as a student");
+                    return new LoginResponse(true, token, "STUDENT", "Successfully logged in as a student", student);
                 } else {
                     return new LoginResponse(false, null, null, "Incorect credentials");
                 }
@@ -53,7 +53,10 @@ public class AuthenticationService {
                 Student student = st.get();
                 if (encoder.matches(req.getPassword(), student.getPassword())) {
                     String token = jwtUtilities.generateToken(student.getEmail());
-                    return new LoginResponse(true, token, "STUDENT", "Successfully logged in as a student");
+                    LoginResponse resp = new LoginResponse(true, token, "STUDENT", "Successfully logged in as a student");
+                    // resp.setUserInfo(student);
+                    
+                    return resp;
                 } else {
                     return new LoginResponse(false, null, null, "Incorect credentials");
                 }
@@ -69,7 +72,7 @@ public class AuthenticationService {
             if (encoder.matches(req.getPassword(), staff.getPassword())) {
                 String token = jwtUtilities.generateToken(staff.getEmail());
                 return new LoginResponse(true, token, staff.getRole().toString(),
-                        "Successfully logged in as" + staff.getRole().toString());
+                        "Successfully logged in as " + staff.getRole().toString(), staff);
             } else {
                 return new LoginResponse(false, null, null, "Incorect credentials");
             }
@@ -81,8 +84,9 @@ public class AuthenticationService {
             Teacher teacher = t.get();
             if (encoder.matches(req.getPassword(), teacher.getPassword())) {
                 String token = jwtUtilities.generateToken(teacher.getEmail());
-                return new LoginResponse(true, token, teacher.getRole().toString(),
-                        "Successfully logged in as" + teacher.getRole().toString());
+                LoginResponse resp = new LoginResponse(true, token, teacher.getRole().toString(), "Successfully logged in as" + teacher.getRole().toString());
+                // resp.setUserInfo(teacher);
+                return resp;
             } else {
                 return new LoginResponse(false, null, null, "Incorrect credentials");
             }
@@ -92,6 +96,7 @@ public class AuthenticationService {
         return new LoginResponse(false, null, null, "invalid credentials");
 
     }
+
 
     private boolean isInteger(String str) {
         try {

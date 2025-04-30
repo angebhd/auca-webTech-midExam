@@ -5,6 +5,8 @@ import java.time.Year;
 import java.util.List;
 import java.util.UUID;
 
+import com.angebhd.studentManagement.model.enumeration.ESemesterName;
+import com.angebhd.studentManagement.model.enumeration.ESemesterStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
@@ -36,13 +38,16 @@ public class Semester {
     private Year year;
 
     @Column(name = "name")
-    private String name;
+    private ESemesterName name;
 
     @Column(name = "startDate")
     private LocalDate startDate;
 
     @Column(name = "endDate")
     private LocalDate endDate;
+
+    @Column(name = "status")
+    private ESemesterStatus status;
 
     /*  */
 

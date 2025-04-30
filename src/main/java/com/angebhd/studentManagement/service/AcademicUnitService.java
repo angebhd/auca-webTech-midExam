@@ -16,7 +16,7 @@ public class AcademicUnitService {
     @Autowired
     private AcademicUnitRepository academicUnitRepository;
 
-    public OperationResult addProgram(AcademicUnit academicUnit) {
+    public OperationResult add(AcademicUnit academicUnit) {
         if (academicUnitRepository.existsByCode(academicUnit.getCode())) {
             return new OperationResult(false, "Academic Unit code already exists");
         }

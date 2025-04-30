@@ -44,6 +44,7 @@ public class SemesterService {
             newSem.setStartDate(semester.getStartDate());
             newSem.setEndDate(semester.getEndDate());
             newSem.setYear(semester.getYear());
+            newSem.setStatus(semester.getStatus());
 
             semesterRepository.save(newSem);
 

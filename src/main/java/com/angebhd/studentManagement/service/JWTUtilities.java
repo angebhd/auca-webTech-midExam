@@ -1,13 +1,11 @@
 package com.angebhd.studentManagement.service;
 
-import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 
 import org.springframework.security.core.userdetails.UserDetails;
@@ -47,7 +45,7 @@ public class JWTUtilities {
                 .add(claims)
                 .subject(username)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + (1000 * 60 * 5))) // 5min
+                .expiration(new Date(System.currentTimeMillis() + (1000 * 60 * 300))) // 300min
                 .and()
                 .signWith(getKey())
                 .compact();

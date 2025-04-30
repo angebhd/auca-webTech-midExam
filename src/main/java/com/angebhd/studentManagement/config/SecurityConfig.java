@@ -36,7 +36,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(customizer -> customizer.disable())
-                .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)) // shall try .NEVER
+                // .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)) // shall try .NEVER
+                .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(au -> au
                         .requestMatchers("/auth/login", "/auth/register").permitAll()
                         .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll() // for Oauth2
