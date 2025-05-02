@@ -12,6 +12,7 @@ import com.angebhd.studentManagement.model.Course;
 import com.angebhd.studentManagement.model.OfferedCourse;
 import com.angebhd.studentManagement.model.Semester;
 import com.angebhd.studentManagement.model.Teacher;
+import com.angebhd.studentManagement.model.enumeration.ESemesterStatus;
 import com.angebhd.studentManagement.repository.CourseRepository;
 import com.angebhd.studentManagement.repository.OfferedCourseRepository;
 import com.angebhd.studentManagement.repository.SemesterRepository;
@@ -32,13 +33,15 @@ public class OfferedCourseService {
     @Autowired
     private TeacherRepository teacherRepository;
 
-
-
-    public OperationResult add(OfferedCourse offeredCourse, UUID courseId, UUID semesterId, UUID teacherId) {
-        Optional<Course> course = courseRepository.findById(courseId);
+    public OperationResult add(OfferedCourse offeredCourse, String courseCode, UUID teacherId) {
+        Optional<Course> course = courseRepository.findByCode(courseCode);
         if (course.isPresent()) {
 
-            Optional<Semester> semester = semesterRepository.findById(semesterId);
+            Optional<Semester> semester = semesterRepository
+                    .findFirstByStatusOrderByStartDateDesc(ESemesterStatus.ACTIVE);
+            if (semester.isEmpty()) {
+                semester = semesterRepository.findFirstByOrderByStartDateDesc();
+            }
             if (semester.isPresent()) {
 
                 boolean exists = offeredCourseRepository.existsBySemesterAndCourseAndGroup(semester.get(), course.get(),
@@ -131,16 +134,16 @@ public class OfferedCourseService {
         }
     }
 
-    public OperationResult delete(OfferedCourse offeredCourse){
+    public OperationResult delete(OfferedCourse offeredCourse) {
         Optional<OfferedCourse> course = offeredCourseRepository.findById(offeredCourse.getId());
         if (course.isPresent()) {
             offeredCourseRepository.deleteById(course.get().getId());
             return new OperationResult(true, "Course deleted successfully");
-        }else{
+        } else {
             return new OperationResult(false, "Course not found");
         }
     }
 
-    
+
 
 }

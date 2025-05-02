@@ -28,6 +28,9 @@ public class AuthenticationService {
     private TeacherRepository teacherRepository;
 
     @Autowired
+    private SemesterService semesterService;
+
+    @Autowired
     private JWTUtilities jwtUtilities;
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(8);
@@ -41,9 +44,9 @@ public class AuthenticationService {
                 Student student = st.get();
                 if (encoder.matches(req.getPassword(), student.getPassword())) {
                     String token = jwtUtilities.generateToken(student.getEmail());
-                    return new LoginResponse(true, token, "STUDENT", "Successfully logged in as a student", student);
+                    return new LoginResponse(true, token, "STUDENT", "Successfully logged in as a student", semesterService.getCurrentSemester(), student);
                 } else {
-                    return new LoginResponse(false, null, null, "Incorect credentials");
+                    return new LoginResponse(false,  "Incorect credentials");
                 }
 
             }
@@ -53,12 +56,12 @@ public class AuthenticationService {
                 Student student = st.get();
                 if (encoder.matches(req.getPassword(), student.getPassword())) {
                     String token = jwtUtilities.generateToken(student.getEmail());
-                    LoginResponse resp = new LoginResponse(true, token, "STUDENT", "Successfully logged in as a student");
+                    LoginResponse resp = new LoginResponse(true, token, "STUDENT", "Successfully logged in as a student",  semesterService.getCurrentSemester(), student);
                     // resp.setUserInfo(student);
                     
                     return resp;
                 } else {
-                    return new LoginResponse(false, null, null, "Incorect credentials");
+                    return new LoginResponse(false,  "Incorect credentials");
                 }
 
             }
@@ -72,9 +75,9 @@ public class AuthenticationService {
             if (encoder.matches(req.getPassword(), staff.getPassword())) {
                 String token = jwtUtilities.generateToken(staff.getEmail());
                 return new LoginResponse(true, token, staff.getRole().toString(),
-                        "Successfully logged in as " + staff.getRole().toString(), staff);
+                        "Successfully logged in as " + staff.getRole().toString(), semesterService.getCurrentSemester(), staff);
             } else {
-                return new LoginResponse(false, null, null, "Incorect credentials");
+                return new LoginResponse(false,  "Incorect credentials");
             }
 
         }
@@ -84,16 +87,16 @@ public class AuthenticationService {
             Teacher teacher = t.get();
             if (encoder.matches(req.getPassword(), teacher.getPassword())) {
                 String token = jwtUtilities.generateToken(teacher.getEmail());
-                LoginResponse resp = new LoginResponse(true, token, teacher.getRole().toString(), "Successfully logged in as" + teacher.getRole().toString());
+                LoginResponse resp = new LoginResponse(true, token, teacher.getRole().toString(), "Successfully logged in as" + teacher.getRole().toString(),  semesterService.getCurrentSemester(), teacher);
                 // resp.setUserInfo(teacher);
                 return resp;
             } else {
-                return new LoginResponse(false, null, null, "Incorrect credentials");
+                return new LoginResponse(false,  "Incorect credentials");
             }
 
         }
 
-        return new LoginResponse(false, null, null, "invalid credentials");
+        return new LoginResponse(false,  "Incorect credentials");
 
     }
 

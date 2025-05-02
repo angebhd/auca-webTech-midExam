@@ -28,10 +28,10 @@ public class OfferedCourseController {
 
 
     @PostMapping(value = "add")
-    public ResponseEntity<?> add(@RequestBody OfferedCourse offeredCourse, @RequestParam UUID courseId,
-            @RequestParam UUID semesterId, @RequestParam UUID teacherId) {
+    public ResponseEntity<?> add(@RequestBody OfferedCourse offeredCourse, @RequestParam String courseCode,
+             @RequestParam UUID teacherId) {
 
-        OperationResult res = offeredCourseService.add(offeredCourse, courseId, semesterId, teacherId);
+        OperationResult res = offeredCourseService.add(offeredCourse, courseCode, teacherId);
         if (res.isSuccess()) {
             return new ResponseEntity<>(res.getMessage(), HttpStatus.CREATED);
 
@@ -67,5 +67,7 @@ public class OfferedCourseController {
             return new ResponseEntity<>(res.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
+
+    
 
 }

@@ -28,11 +28,13 @@ public class FeesService {
         List<OfferedCourse> offeredCourses = studentRegistration.getCourses();
         int amount = 0;
         int creditPrice = 17869;
+        if (offeredCourses != null) {
 
-        for (OfferedCourse o : offeredCourses) {
-            Course c = o.getCourse();
-            int temp = creditPrice * (int) c.getCredit();
-            amount += temp;
+            for (OfferedCourse o : offeredCourses) {
+                Course c = o.getCourse();
+                int temp = creditPrice * (int) c.getCredit();
+                amount += temp;
+            }
         }
         fees.setAmount(amount);
         fees.setDate(LocalDate.now());
