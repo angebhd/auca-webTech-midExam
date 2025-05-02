@@ -1,4 +1,4 @@
-package com.angebhd.studentManagement.model.others;
+package com.angebhd.studentManagement.DTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

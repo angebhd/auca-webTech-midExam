@@ -35,3 +35,5 @@ build/
 #### My ignore files:
 
 ERDStructure
+
+.env

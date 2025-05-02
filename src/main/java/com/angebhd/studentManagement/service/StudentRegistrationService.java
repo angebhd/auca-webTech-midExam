@@ -11,13 +11,12 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.angebhd.studentManagement.DTO.OperationResult;
 import com.angebhd.studentManagement.model.OfferedCourse;
 import com.angebhd.studentManagement.model.Semester;
 import com.angebhd.studentManagement.model.Student;
 import com.angebhd.studentManagement.model.StudentRegistration;
-import com.angebhd.studentManagement.model.others.OperationResult;
 import com.angebhd.studentManagement.repository.OfferedCourseRepository;
-import com.angebhd.studentManagement.repository.SemesterRepository;
 import com.angebhd.studentManagement.repository.StudentRegistrationRepository;
 import com.angebhd.studentManagement.repository.StudentRepository;
 
@@ -34,53 +33,56 @@ public class StudentRegistrationService {
     private OfferedCourseRepository offeredCourseRepository;
 
     @Autowired
-    private SemesterRepository semesterRepository;
-
-    @Autowired
     private FeesService feesService;
 
-    public OperationResult create(int studentId, UUID semesterId, UUID[] coursesId) {
+    @Autowired
+    private SemesterService semesterService;
+
+    public OperationResult create(int studentId, UUID[] coursesId) {
         Optional<Student> st = studentRepository.findById(studentId);
         if (st.isPresent()) {
             Student student = st.get();
-            Optional<Semester> sem = semesterRepository.findById(semesterId);
-            if (sem.isPresent()) {
-                Semester semester = sem.get();
-                Optional<StudentRegistration> exist = studentRegistrationRepository.findByStudentAndSemester(student,
-                        semester);
-                if (exist.isPresent()) {
-                    return new OperationResult(false,
-                            "Cannot create two registrations for the same student and semester");
-                }
+            Semester semester = semesterService.getCurrentSemester();
+            Optional<StudentRegistration> exist = studentRegistrationRepository.findByStudentAndSemester(student,
+                    semester);
+            if (exist.isPresent()) {
+                return new OperationResult(false, "Cannot create two registrations for the same student and semester");
+            }
 
-                Set<OfferedCourse> courses = new HashSet<>();
+            Set<OfferedCourse> courses = new HashSet<>();
+            if (coursesId != null) {
                 for (UUID uuid : coursesId) {
                     Optional<OfferedCourse> c = offeredCourseRepository.findById(uuid);
                     if (c.isPresent()) {
                         courses.add(c.get());
                     }
                 }
-                if (courses.size() != 0) {
-                    StudentRegistration studentRegistration = new StudentRegistration();
-                    studentRegistration.setStudent(student);
-                    studentRegistration.setSemester(semester);
-                    studentRegistration.setCourses(new ArrayList<>(courses));
-                    studentRegistration.setDate(LocalDate.now());
-
-                    studentRegistrationRepository.save(studentRegistration);
-                    boolean res = feesService.create(student, studentRegistration);
-                    if (res) {
-                        return new OperationResult(true, "Registration created successfully");
-
-                    } else {
-                        return new OperationResult(true, "Registration created successfully, creating fees failed");
-                    }
+            }
+            StudentRegistration studentRegistration = new StudentRegistration();
+            studentRegistration.setStudent(student);
+            studentRegistration.setSemester(semester);
+            studentRegistration.setDate(LocalDate.now());
+            if (courses.size() != 0) {
+                studentRegistration.setCourses(new ArrayList<>(courses));
+                studentRegistrationRepository.save(studentRegistration);
+                boolean res = feesService.create(student, studentRegistration);
+                if (res) {
+                    return new OperationResult(true, "Registration created successfully");
 
                 } else {
-                    return new OperationResult(false, "No course added");
+                    return new OperationResult(true, "Registration created successfully, creating fees failed");
                 }
-            } else {
 
+            } else {
+                studentRegistrationRepository.save(studentRegistration);
+                boolean res = feesService.create(student, studentRegistration);
+                if (res) {
+                    return new OperationResult(true, "Registration created successfully, no course added");
+
+                } else {
+                    return new OperationResult(true,
+                            "Registration created successfully, with 0 course. creating fees failed");
+                }
             }
 
         }
@@ -91,21 +93,17 @@ public class StudentRegistrationService {
         return studentRegistrationRepository.findAll();
     }
 
-    public StudentRegistration getByStudent(int studentId, UUID semesterId) {
+    public StudentRegistration getByStudent(int studentId) {
 
         Optional<Student> st = studentRepository.findById(studentId);
         if (st.isPresent()) {
             Student student = st.get();
 
-            Optional<Semester> sem = semesterRepository.findById(semesterId);
-
-            if (sem.isPresent()) {
-                Semester semester = sem.get();
-                Optional<StudentRegistration> stRg = studentRegistrationRepository.findByStudentAndSemester(student,
-                        semester);
-                if (stRg.isPresent()) {
-                    return stRg.get();
-                }
+            Semester semester = semesterService.getCurrentSemester();
+            Optional<StudentRegistration> stRg = studentRegistrationRepository.findByStudentAndSemester(student,
+                    semester);
+            if (stRg.isPresent()) {
+                return stRg.get();
             }
 
         }
@@ -113,96 +111,82 @@ public class StudentRegistrationService {
 
     }
 
-    public OperationResult addCourse(int studentId, UUID semesterId, UUID[] course) {
+    public OperationResult addCourse(int studentId, UUID[] course) {
         Optional<Student> st = studentRepository.findById(studentId);
         if (st.isPresent()) {
             Student student = st.get();
 
-            Optional<Semester> sem = semesterRepository.findById(semesterId);
+            Semester semester = semesterService.getCurrentSemester();
+            Optional<StudentRegistration> stRg = studentRegistrationRepository.findByStudentAndSemester(student,
+                    semester);
+            if (stRg.isPresent()) {
+                StudentRegistration studentRegistration = stRg.get();
+                int courseNumber = studentRegistration.getCourses().size();
+                Set<OfferedCourse> courseSet = new HashSet<>(studentRegistration.getCourses());
 
-            if (sem.isPresent()) {
-                Semester semester = sem.get();
-                Optional<StudentRegistration> stRg = studentRegistrationRepository.findByStudentAndSemester(student,
-                        semester);
-                if (stRg.isPresent()) {
-                    StudentRegistration studentRegistration = stRg.get();
-                    int courseNumber = studentRegistration.getCourses().size();
-                    Set<OfferedCourse> courseSet = new HashSet<>(studentRegistration.getCourses());
-
-                    for (UUID uuid : course) {
-                        Optional<OfferedCourse> c = offeredCourseRepository.findById(uuid);
-                        if (c.isPresent()) {
-                            courseSet.add(c.get());
-                        }
+                for (UUID uuid : course) {
+                    Optional<OfferedCourse> c = offeredCourseRepository.findById(uuid);
+                    if (c.isPresent()) {
+                        courseSet.add(c.get());
                     }
-                    if (courseNumber != courseSet.size()) {
-                        studentRegistration.setCourses(new ArrayList<>(courseSet));
-                        studentRegistrationRepository.save(studentRegistration);
-                        boolean res = feesService.update(student, studentRegistration);
-                        if (res) {
-                            return new OperationResult(true, "Courses updated successfully");
-
-                        } else {
-                            return new OperationResult(true, "Courses updated successfully, fees not updated");
-                        }
-                    } else {
-
-                        return new OperationResult(false, "Course not added, they were not found");
-                    }
-
-                } else {
-                    return new OperationResult(false, "Student registration not found");
                 }
+                if (courseNumber != courseSet.size()) {
+                    studentRegistration.setCourses(new ArrayList<>(courseSet));
+                    studentRegistrationRepository.save(studentRegistration);
+                    boolean res = feesService.update(student, studentRegistration);
+                    if (res) {
+                        return new OperationResult(true, "Courses updated successfully");
+
+                    } else {
+                        return new OperationResult(true, "Courses updated successfully, fees not updated");
+                    }
+                } else {
+
+                    return new OperationResult(false, "Course not added, they were not found");
+                }
+
             } else {
-                return new OperationResult(false, "Invalid semester");
+                return new OperationResult(false, "Student registration not found");
             }
 
         }
         return new OperationResult(false, "Student not found");
     }
 
-    public OperationResult removeCourse(int studentId, UUID semesterId, UUID courseId) {
+    public OperationResult removeCourse(int studentId, UUID courseId) {
 
         Optional<Student> st = studentRepository.findById(studentId);
         if (st.isPresent()) {
             Student student = st.get();
 
-            Optional<Semester> sem = semesterRepository.findById(semesterId);
+            Semester semester = semesterService.getCurrentSemester();
+            Optional<StudentRegistration> stRg = studentRegistrationRepository.findByStudentAndSemester(student,
+                    semester);
+            if (stRg.isPresent()) {
+                StudentRegistration studentRegistration = stRg.get();
+                // int courseNumber = studentRegistration.getCourses().size();
+                Set<OfferedCourse> courseSet = new HashSet<>(studentRegistration.getCourses());
 
-            if (sem.isPresent()) {
-                Semester semester = sem.get();
-                Optional<StudentRegistration> stRg = studentRegistrationRepository.findByStudentAndSemester(student,
-                        semester);
-                if (stRg.isPresent()) {
-                    StudentRegistration studentRegistration = stRg.get();
-                    int courseNumber = studentRegistration.getCourses().size();
-                    Set<OfferedCourse> courseSet = new HashSet<>(studentRegistration.getCourses());
+                Optional<OfferedCourse> c = offeredCourseRepository.findById(courseId);
+                if (c.isPresent()) {
+                    courseSet.remove(c.get());
 
-                    Optional<OfferedCourse> c = offeredCourseRepository.findById(courseId);
-                    if (c.isPresent()) {
-                        courseSet.remove(c.get());
-                    }
+                    studentRegistration.setCourses(new ArrayList<>(courseSet));
+                    studentRegistrationRepository.save(studentRegistration);
+                    boolean res = feesService.update(student, studentRegistration);
+                    if (res) {
+                        return new OperationResult(true, "Courses removed successfully");
 
-                    if (courseNumber != courseSet.size()) {
-                        studentRegistration.setCourses(new ArrayList<>(courseSet));
-                        studentRegistrationRepository.save(studentRegistration);
-                        boolean res = feesService.update(student, studentRegistration);
-                        if (res) {
-                            return new OperationResult(true, "Courses removed successfully");
-
-                        } else {
-
-                            return new OperationResult(true, "Courses removed successfully, fees not updated");
-                        }
                     } else {
 
-                        return new OperationResult(false, "Course not deleted, they were not found");
+                        return new OperationResult(true, "Courses removed successfully, fees not updated");
                     }
                 } else {
-                    return new OperationResult(false, "Student registration not found");
+
+                    return new OperationResult(false, "Course not deleted, they were not found");
                 }
             } else {
-                return new OperationResult(false, "Invalid semester");
+                return new OperationResult(false, "Student registration not found");
             }
 
         }

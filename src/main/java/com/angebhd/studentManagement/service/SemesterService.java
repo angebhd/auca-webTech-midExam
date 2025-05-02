@@ -6,8 +6,9 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.angebhd.studentManagement.DTO.OperationResult;
 import com.angebhd.studentManagement.model.Semester;
-import com.angebhd.studentManagement.model.others.OperationResult;
+import com.angebhd.studentManagement.model.enumeration.ESemesterStatus;
 import com.angebhd.studentManagement.repository.SemesterRepository;
 
 @Service
@@ -44,23 +45,32 @@ public class SemesterService {
             newSem.setStartDate(semester.getStartDate());
             newSem.setEndDate(semester.getEndDate());
             newSem.setYear(semester.getYear());
+            newSem.setStatus(semester.getStatus());
 
             semesterRepository.save(newSem);
 
-            return new OperationResult(true,"Semester " + newSem.getName() + " of "  + newSem.getYear() + " updated successfully");
+            return new OperationResult(true,
+                    "Semester " + newSem.getName() + " of " + newSem.getYear() + " updated successfully");
         }
         return new OperationResult(false, "Could not update the semester");
 
     }
 
-    public OperationResult delete (Semester semester){
+    public OperationResult delete(Semester semester) {
         Optional<Semester> sem = semesterRepository.findById(semester.getId());
-        if(sem.isPresent()){
+        if (sem.isPresent()) {
             semesterRepository.delete(sem.get());
-            return new OperationResult(true, "Semester " + sem.get().getName()+ " of " + sem.get().getYear() +" deleted successfully");  
+            return new OperationResult(true,
+                    "Semester " + sem.get().getName() + " of " + sem.get().getYear() + " deleted successfully");
         }
         return new OperationResult(false, "Could not not the semester");
-
     }
 
+    public Semester getCurrentSemester() {
+        Optional<Semester> semester = semesterRepository.findFirstByStatusOrderByStartDateDesc(ESemesterStatus.ACTIVE);
+        if (semester.isEmpty()) {
+            semester = semesterRepository.findFirstByOrderByStartDateDesc();
+        }
+        return semester.get();
+    }
 }

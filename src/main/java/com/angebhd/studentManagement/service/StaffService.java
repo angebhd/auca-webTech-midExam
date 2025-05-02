@@ -4,9 +4,11 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import com.angebhd.studentManagement.DTO.OperationResult;
 import com.angebhd.studentManagement.model.Staff;
-import com.angebhd.studentManagement.model.others.OperationResult;
 import com.angebhd.studentManagement.repository.StaffRepository;
 
 @Service
@@ -14,6 +16,8 @@ public class StaffService {
 
     @Autowired
     private StaffRepository staffRepository;
+
+    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(8);
 
     public OperationResult add(Staff staff) {
         boolean exist = staffRepository.existsByFirstNameAndLastNameAndEmail(staff.getFirstName(), staff.getLastName(),
@@ -28,6 +32,7 @@ public class StaffService {
             return new OperationResult(false, "Cannot save Staff with same names and Email");
 
         } else {
+            staff.setPassword(encoder.encode(staff.getPassword()));
             staffRepository.save(staff);
             return new OperationResult(true, "Staff " + staff.getFirstName() + " " + staff.getLastName()
                     + " added successfully as " + staff.getRole());
@@ -43,6 +48,7 @@ public class StaffService {
         Optional<Staff> st = staffRepository.findById(staff.getId());
 
         if (st.isPresent()) {
+            staff.setPassword(encoder.encode(staff.getPassword()));
             staffRepository.save(staff);
             return new OperationResult(true, "Staff updated successfully");
         }
@@ -58,7 +64,7 @@ public class StaffService {
             return new OperationResult(true, "Staff " + staff.getFirstName() + " " + staff.getLastName()
                     + " with role " + staff.getRole() + " deleted successfully");
         }
-        return new OperationResult(false, "Staff with mail " +email+" not found");
+        return new OperationResult(false, "Staff with mail " + email + " not found");
     }
 
 }

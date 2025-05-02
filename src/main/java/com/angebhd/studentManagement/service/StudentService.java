@@ -6,12 +6,13 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.angebhd.studentManagement.DTO.OperationResult;
 import com.angebhd.studentManagement.model.AcademicUnit;
 import com.angebhd.studentManagement.model.Student;
 import com.angebhd.studentManagement.model.enumeration.EAcademicUnitType;
-import com.angebhd.studentManagement.model.others.OperationResult;
 import com.angebhd.studentManagement.repository.AcademicUnitRepository;
 import com.angebhd.studentManagement.repository.StudentRepository;
 
@@ -24,11 +25,21 @@ public class StudentService {
     @Autowired
     private AcademicUnitRepository academicUnitRepository;
 
+    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(8);
+
     public OperationResult add(Student student, String code) {
+
+
         Optional<AcademicUnit> department = academicUnitRepository.findByCode(code);
 
         if (department.isPresent()) {
             if (department.get().getType().equals(EAcademicUnitType.DEPARTMENT)) {
+                // student.setPassword(encoder.encode(student.getPassword()));
+                Optional<Student> exist = studentRepository.findByEmail(student.getEmail());
+                if (exist.isPresent()) {
+                    return new OperationResult(false, "Student with email " + student.getEmail()+ " already exist");
+
+                }
                 student.setDepartment(department.get());
                 student.setEnrollmentDate(LocalDate.now());
 
@@ -56,9 +67,20 @@ public class StudentService {
         return null;
     }
 
-    public OperationResult update(Student student) {
+    public OperationResult update(Student student, String departmentCode) {
         Optional<Student> st = studentRepository.findById(student.getId());
         if (st.isPresent()) {
+            Optional<AcademicUnit> department = academicUnitRepository.findByCode(departmentCode);
+            if (department.isPresent()) {
+                student.setDepartment(department.get());
+            }else{
+                return new OperationResult(false, "Departement not found");
+            }
+            if (student.getPassword() != null) {
+                student.setPassword(encoder.encode(student.getPassword()));
+            }else{student.setPassword(st.get().getPassword());          }
+
+
             studentRepository.save(student);
             return new OperationResult(true, "Student updated successfully");
 
