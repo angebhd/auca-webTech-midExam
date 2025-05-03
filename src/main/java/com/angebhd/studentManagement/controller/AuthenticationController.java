@@ -3,6 +3,7 @@ package com.angebhd.studentManagement.controller;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.angebhd.studentManagement.DTO.FrontEnd;
 import com.angebhd.studentManagement.DTO.LoginRequest;
 import com.angebhd.studentManagement.DTO.LoginResponse;
 import com.angebhd.studentManagement.service.AuthenticationService;
@@ -33,7 +33,8 @@ public class AuthenticationController {
     @Autowired
     private JWTUtilities jwtUtilities;
 
-    FrontEnd frontEnd = new FrontEnd();
+    @Value("${front.end.ip}")
+    private String frontEndIp;
 
     @PostMapping(value = "login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
@@ -67,12 +68,11 @@ public class AuthenticationController {
                     setPath("/"); // Cookie available to the entire domain
                 }
             });
-            response.sendRedirect(frontEnd.getIp() + "/auth/oauth2/success");
+            response.sendRedirect(frontEndIp + "/auth/oauth2/success");
         } catch (Exception e) {
             System.out.println("An error occurred: " + e.getMessage());
-            response.sendRedirect(frontEnd.getIp() + "/auth/oauth2/failed");
+            response.sendRedirect(frontEndIp + "/auth/oauth2/failed");
         }
     }
-
 
 }

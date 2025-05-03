@@ -1,6 +1,7 @@
 package com.angebhd.studentManagement.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,14 +15,15 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.angebhd.studentManagement.DTO.FrontEnd;
 import com.angebhd.studentManagement.service.UsersDetailsOauth2Services;
 import com.angebhd.studentManagement.service.UsersDetailsService;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    private FrontEnd frontEnd = new FrontEnd();
+
+    @Value("${front.end.ip}")
+    private String frontEndIp;
 
     @Autowired
     private UsersDetailsService usersDetailsService;
@@ -34,9 +36,12 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+       
         return http
                 .csrf(customizer -> customizer.disable())
-                // .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)) // shall try .NEVER
+                // .sessionManagement(c ->
+                // c.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)) // shall try
+                // .NEVER
                 .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(au -> au
                         .requestMatchers("/auth/login", "/auth/register").permitAll()
@@ -46,7 +51,7 @@ public class SecurityConfig {
                 .oauth2Login(oauth -> oauth
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(usersDetailsOauth2Services))
-                        .defaultSuccessUrl(frontEnd.getIp() + "auth/oauth2/success", true))
+                        .defaultSuccessUrl(frontEndIp + "/auth/oauth2/success", true))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
