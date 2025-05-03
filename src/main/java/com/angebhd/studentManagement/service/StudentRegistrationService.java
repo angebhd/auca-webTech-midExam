@@ -20,6 +20,8 @@ import com.angebhd.studentManagement.repository.OfferedCourseRepository;
 import com.angebhd.studentManagement.repository.StudentRegistrationRepository;
 import com.angebhd.studentManagement.repository.StudentRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class StudentRegistrationService {
 
@@ -38,6 +40,7 @@ public class StudentRegistrationService {
     @Autowired
     private SemesterService semesterService;
 
+    @Transactional
     public OperationResult create(int studentId, UUID[] coursesId) {
         Optional<Student> st = studentRepository.findById(studentId);
         if (st.isPresent()) {
@@ -64,6 +67,12 @@ public class StudentRegistrationService {
             studentRegistration.setDate(LocalDate.now());
             if (courses.size() != 0) {
                 studentRegistration.setCourses(new ArrayList<>(courses));
+                // double check
+                if (studentRegistrationRepository.findByStudentAndSemester(student, semester).isPresent()) {
+                    return new OperationResult(false,
+                            "Cannot create two registrations for the same student and semester");
+                }
+                /////
                 studentRegistrationRepository.save(studentRegistration);
                 boolean res = feesService.create(student, studentRegistration);
                 if (res) {
@@ -74,6 +83,13 @@ public class StudentRegistrationService {
                 }
 
             } else {
+
+                // double check
+                if (studentRegistrationRepository.findByStudentAndSemester(student, semester).isPresent()) {
+                    return new OperationResult(false,
+                            "Cannot create two registrations for the same student and semester");
+                }
+                /////
                 studentRegistrationRepository.save(studentRegistration);
                 boolean res = feesService.create(student, studentRegistration);
                 if (res) {
