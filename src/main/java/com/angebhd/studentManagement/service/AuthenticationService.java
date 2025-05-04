@@ -1,5 +1,6 @@
 package com.angebhd.studentManagement.service;
 
+
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.angebhd.studentManagement.DTO.LoginRequest;
 import com.angebhd.studentManagement.DTO.LoginResponse;
+import com.angebhd.studentManagement.DTO.UserData;
 import com.angebhd.studentManagement.model.Staff;
 import com.angebhd.studentManagement.model.Student;
 import com.angebhd.studentManagement.model.Teacher;
@@ -31,7 +33,12 @@ public class AuthenticationService {
     private SemesterService semesterService;
 
     @Autowired
+    EmailService emailService;
+
+    @Autowired
     private JWTUtilities jwtUtilities;
+
+    
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(8);
 
@@ -44,9 +51,13 @@ public class AuthenticationService {
                 Student student = st.get();
                 if (encoder.matches(req.getPassword(), student.getPassword())) {
                     String token = jwtUtilities.generateToken(student.getEmail());
-                    return new LoginResponse(true, token, "STUDENT", "Successfully logged in as a student", semesterService.getCurrentSemester(), student);
+                    // email test
+                    emailService.adminLoginMailAlert(new UserData(student));
+                    ///
+                    return new LoginResponse(true, token, "STUDENT", "Successfully logged in as a student",
+                            semesterService.getCurrentSemester(), student);
                 } else {
-                    return new LoginResponse(false,  "Incorect credentials");
+                    return new LoginResponse(false, "Incorect credentials");
                 }
 
             }
@@ -56,12 +67,18 @@ public class AuthenticationService {
                 Student student = st.get();
                 if (encoder.matches(req.getPassword(), student.getPassword())) {
                     String token = jwtUtilities.generateToken(student.getEmail());
-                    LoginResponse resp = new LoginResponse(true, token, "STUDENT", "Successfully logged in as a student",  semesterService.getCurrentSemester(), student);
+
+                    // email test
+                    emailService.adminLoginMailAlert(new UserData(student));
+                    ///
+
+                    LoginResponse resp = new LoginResponse(true, token, "STUDENT",
+                            "Successfully logged in as a student", semesterService.getCurrentSemester(), student);
                     // resp.setUserInfo(student);
-                    
+
                     return resp;
                 } else {
-                    return new LoginResponse(false,  "Incorect credentials");
+                    return new LoginResponse(false, "Incorect credentials");
                 }
 
             }
@@ -74,10 +91,16 @@ public class AuthenticationService {
             Staff staff = st.get();
             if (encoder.matches(req.getPassword(), staff.getPassword())) {
                 String token = jwtUtilities.generateToken(staff.getEmail());
+
+                // email test
+                emailService.adminLoginMailAlert(new UserData(staff));
+                ///
+
                 return new LoginResponse(true, token, staff.getRole().toString(),
-                        "Successfully logged in as " + staff.getRole().toString(), semesterService.getCurrentSemester(), staff);
+                        "Successfully logged in as " + staff.getRole().toString(), semesterService.getCurrentSemester(),
+                        staff);
             } else {
-                return new LoginResponse(false,  "Incorect credentials");
+                return new LoginResponse(false, "Incorect credentials");
             }
 
         }
@@ -87,19 +110,25 @@ public class AuthenticationService {
             Teacher teacher = t.get();
             if (encoder.matches(req.getPassword(), teacher.getPassword())) {
                 String token = jwtUtilities.generateToken(teacher.getEmail());
-                LoginResponse resp = new LoginResponse(true, token, teacher.getRole().toString(), "Successfully logged in as" + teacher.getRole().toString(),  semesterService.getCurrentSemester(), teacher);
+
+                // email test
+                emailService.adminLoginMailAlert(new UserData(teacher));
+                ///
+
+                LoginResponse resp = new LoginResponse(true, token, teacher.getRole().toString(),
+                        "Successfully logged in as" + teacher.getRole().toString(),
+                        semesterService.getCurrentSemester(), teacher);
                 // resp.setUserInfo(teacher);
                 return resp;
             } else {
-                return new LoginResponse(false,  "Incorect credentials");
+                return new LoginResponse(false, "Incorect credentials");
             }
 
         }
 
-        return new LoginResponse(false,  "Incorect credentials");
+        return new LoginResponse(false, "Incorect credentials");
 
     }
-
 
     private boolean isInteger(String str) {
         try {
@@ -110,6 +139,6 @@ public class AuthenticationService {
         }
     }
 
-
+    
 
 }
