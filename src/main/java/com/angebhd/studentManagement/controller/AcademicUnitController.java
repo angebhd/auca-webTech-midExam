@@ -36,7 +36,7 @@ public class AcademicUnitController {
     @PostMapping(value = "add")
     public ResponseEntity<?> add(@RequestBody AcademicUnit academicUnit,@RequestParam(required = false) String parentCode) {
 
-        if (parentCode == null) {
+        if (parentCode == null || parentCode.isEmpty()) {
             OperationResult res = academicUnitService.add(academicUnit);
             if (res.isSuccess()) {
                 return new ResponseEntity<>(res.getMessage(), HttpStatus.CREATED);
