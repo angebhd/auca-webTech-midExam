@@ -32,7 +32,6 @@ public class OtpService {
   @Autowired
   private EmailService emailService;
 
-
   public boolean generateAndSendOtp(UUID otpID, String userId, String userType, UserData userData) {
 
     String otp = generateOtp(OTP_LENGTH);
