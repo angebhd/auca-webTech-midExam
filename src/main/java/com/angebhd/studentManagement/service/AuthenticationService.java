@@ -1,7 +1,7 @@
 package com.angebhd.studentManagement.service;
 
-
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -32,28 +32,27 @@ public class AuthenticationService {
     @Autowired
     private SemesterService semesterService;
 
+    // @Autowired
+    // private OtpService otpService;
+
     @Autowired
-    EmailService emailService;
+    private EmailService emailService;
 
     @Autowired
     private JWTUtilities jwtUtilities;
-
-    
 
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(8);
 
     public LoginResponse login(LoginRequest req) {
 
-        /* For students */
         if (isInteger(req.getUsername())) {
             Optional<Student> st = studentRepository.findById(Integer.parseInt(req.getUsername()));
             if (st.isPresent()) {
                 Student student = st.get();
                 if (encoder.matches(req.getPassword(), student.getPassword())) {
                     String token = jwtUtilities.generateToken(student.getEmail());
-                    // email test
                     emailService.adminLoginMailAlert(new UserData(student));
-                    ///
+                    // otpService.generateAndSendOtp(UUID.randomUUID(), String.valueOf( student.getId()), "STUDENT", new UserData(student));
                     return new LoginResponse(true, token, "STUDENT", "Successfully logged in as a student",
                             semesterService.getCurrentSemester(), student);
                 } else {
@@ -138,7 +137,5 @@ public class AuthenticationService {
             return false;
         }
     }
-
-    
 
 }
