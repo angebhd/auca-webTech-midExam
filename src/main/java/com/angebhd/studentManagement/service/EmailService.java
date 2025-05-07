@@ -33,7 +33,7 @@ public class EmailService {
         emailSender.send(message);
     }
 
-    private void sendHtmlEmail(String to, String subject, String htmlContent) throws MessagingException {
+    public void sendHtmlEmail(String to, String subject, String htmlContent) throws MessagingException {
         MimeMessage message = emailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 

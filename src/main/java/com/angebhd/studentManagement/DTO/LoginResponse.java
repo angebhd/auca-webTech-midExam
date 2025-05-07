@@ -59,4 +59,14 @@ public class LoginResponse {
         this.user = new UserData(teach);
 
     }
+
+    public LoginResponse(boolean success, String token, String role, String message, Semester semester, UserData user) {
+        this.token = token;
+        this.role = role;
+        this.success = success;
+        this.message = message;
+        this.semester = semester;
+        this.user = user;
+
+    }
 }

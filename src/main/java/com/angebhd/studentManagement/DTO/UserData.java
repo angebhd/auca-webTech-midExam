@@ -14,6 +14,7 @@ public class UserData {
     private String firstName;
     private String lastName;
     private String id;
+    private String email;
     private String faculty;
     private String department;
     private String program;
@@ -25,6 +26,7 @@ public class UserData {
         this.setFirstName(st.getFirstName());
         this.setLastName(st.getLastName());
         this.setId(""+ st.getId());
+        this.setEmail(st.getEmail());
 
         if (st.getDepartment() != null) {
             this.setFaculty(st.getDepartment().getParent().getName());
@@ -39,6 +41,8 @@ public class UserData {
         this.setFirstName(st.getFirstName());
         this.setLastName(st.getLastName());
         this.setId(st.getEmail());
+        this.setEmail(st.getEmail());
+
 
 
         this.setRole(st.getRole().toString());
@@ -49,6 +53,7 @@ public class UserData {
         this.setFirstName(st.getFirstName());
         this.setLastName(st.getLastName());
         this.setId(st.getEmail());
+        this.setEmail(st.getEmail());
         this.setQualification(st.getQualification().toString());
 
         this.setRole(st.getRole().toString());
