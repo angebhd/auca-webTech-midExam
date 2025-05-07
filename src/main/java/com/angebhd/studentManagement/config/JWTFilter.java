@@ -36,26 +36,45 @@ public class JWTFilter extends OncePerRequestFilter {
         String token = null;
         String username = null;
 
+        try {
 
-        if (authenticationHeader != null && authenticationHeader.startsWith("Bearer ") && authenticationHeader.length() > 8) {
-            token = authenticationHeader.substring(7);
-            username = jwtUtilities.extractUsername(token);
-        }
-
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-
-            UserDetails userDetails = applicationContext.getBean(UsersDetailsService.class)
-                    .loadUserByUsername(username);
-
-            if (jwtUtilities.validateToken(token, userDetails)) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails,
-                        null, userDetails.getAuthorities());
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+            if (authenticationHeader != null && authenticationHeader.startsWith("Bearer ")
+                    && authenticationHeader.length() > 8) {
+                token = authenticationHeader.substring(7);
+                username = jwtUtilities.extractUsername(token);
             }
 
-        }
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-        filterChain.doFilter(req, res);
+                UserDetails userDetails = applicationContext.getBean(UsersDetailsService.class)
+                        .loadUserByUsername(username);
+
+                if (jwtUtilities.validateToken(token, userDetails)) {
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails,
+                            null, userDetails.getAuthorities());
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
+
+            }
+
+            filterChain.doFilter(req, res);
+        } catch (io.jsonwebtoken.ExpiredJwtException e) {
+            writeErrorResponse(res, HttpServletResponse.SC_UNAUTHORIZED, "Token has expired."); //401
+            return;
+        } catch (io.jsonwebtoken.JwtException e) {
+            writeErrorResponse(res, HttpServletResponse.SC_UNAUTHORIZED, "Invalid token.");
+            return;
+        } catch (Exception e) {
+            writeErrorResponse(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error occurred."); //500
+            return;
+        }
+    }
+
+    private void writeErrorResponse(HttpServletResponse res, int statusCode, String message) throws IOException {
+        res.setStatus(statusCode);
+        res.setContentType("application/json");
+        res.setCharacterEncoding("UTF-8");
+        res.getWriter().write("{\"message\": \"" + message + "\"}");
     }
 }
