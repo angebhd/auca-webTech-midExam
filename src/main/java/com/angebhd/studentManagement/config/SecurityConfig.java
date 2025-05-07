@@ -44,7 +44,7 @@ public class SecurityConfig {
                 // .NEVER
                 .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(au -> au
-                        .requestMatchers("/auth/login", "/auth/register").permitAll()
+                        .requestMatchers("/auth/login", "/auth/register", "/auth/**").permitAll()
                         .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll() // for Oauth2
                         .anyRequest().permitAll())
                 .formLogin(form -> form.disable())
