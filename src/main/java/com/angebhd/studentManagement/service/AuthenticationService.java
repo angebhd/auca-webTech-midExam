@@ -37,8 +37,8 @@ public class AuthenticationService {
     @Autowired
     private OtpService otpService;
 
-    @Autowired
-    private EmailService emailService;
+    // @Autowired
+    // private EmailService emailService;
 
     @Autowired
     private JWTUtilities jwtUtilities;
@@ -54,15 +54,17 @@ public class AuthenticationService {
                 Teacher teacher = t.get();
                 if (encoder.matches(req.getPassword(), teacher.getPassword())) {
                     // String token = jwtUtilities.generateToken(teacher.getEmail());
-                    String token = UUID.randomUUID().toString();
 
                     // email test
                     // emailService.adminLoginMailAlert(new UserData(teacher));
                     ///
+                    UUID token = UUID.randomUUID();
+                    otpService.generateAndSendOtp(token, String.valueOf(teacher.getEmail()), "TEACHER",
+                            new UserData(teacher));
 
-                    LoginResponse resp = new LoginResponse(true, token, teacher.getRole().toString(),
+                    LoginResponse resp = new LoginResponse(true, token.toString(), teacher.getRole().toString(),
                             "Use the OTP sent to your email, to login" + teacher.getRole().toString(),
-                            semesterService.getCurrentSemester(), teacher);
+                            semesterService.getCurrentSemester());
                     // resp.setUserInfo(teacher);
                     return resp;
                 } else {
@@ -79,15 +81,18 @@ public class AuthenticationService {
                 Staff staff = st.get();
                 if (encoder.matches(req.getPassword(), staff.getPassword())) {
                     // String token = jwtUtilities.generateToken(staff.getEmail());
-                    String token = UUID.randomUUID().toString();
 
                     // email test
                     // emailService.adminLoginMailAlert(new UserData(staff));
                     ///
+                    ///
+                    UUID token = UUID.randomUUID();
+                    otpService.generateAndSendOtp(token, String.valueOf(staff.getEmail()), "STAFF",
+                            new UserData(staff));
 
-                    return new LoginResponse(true, token,staff.getRole().toString(),"Use the OTP sent to your email, to login",
-                            semesterService.getCurrentSemester(),
-                            staff);
+                    return new LoginResponse(true, token.toString(), staff.getRole().toString(),
+                            "Use the OTP sent to your email, to login",
+                            semesterService.getCurrentSemester());
                 } else {
                     return new LoginResponse(false, "Incorect credentials");
                 }
@@ -101,14 +106,14 @@ public class AuthenticationService {
                 if (st.isPresent()) {
                     Student student = st.get();
                     if (encoder.matches(req.getPassword(), student.getPassword())) {
-                        String token = jwtUtilities.generateToken(student.getEmail());
+                        // String token = jwtUtilities.generateToken(student.getEmail());
                         // emailService.adminLoginMailAlert(new UserData(student));
-                        UUID otpUUID = UUID.randomUUID();
-                        otpService.generateAndSendOtp(otpUUID, String.valueOf(student.getId()), "STUDENT",
+                        UUID token = UUID.randomUUID();
+                        otpService.generateAndSendOtp(token, String.valueOf(student.getId()), "STUDENT",
                                 new UserData(student));
-                        return new LoginResponse(true, otpUUID.toString(), "STUDENT",
-                                "Successfully logged in as a student",
-                                semesterService.getCurrentSemester(), student);
+                        return new LoginResponse(true, token.toString(), "STUDENT",
+                                "Use the OTP sent to your email, to login",
+                                semesterService.getCurrentSemester());
                     } else {
                         return new LoginResponse(false, "Incorect credentials");
                     }
@@ -119,14 +124,18 @@ public class AuthenticationService {
                 if (st.isPresent()) {
                     Student student = st.get();
                     if (encoder.matches(req.getPassword(), student.getPassword())) {
-                        String token = jwtUtilities.generateToken(student.getEmail());
+                        // String token = jwtUtilities.generateToken(student.getEmail());
 
                         // email test
                         // emailService.adminLoginMailAlert(new UserData(student));
                         ///
 
-                        LoginResponse resp = new LoginResponse(true, token, "STUDENT",
-                                "Successfully logged in as a student", semesterService.getCurrentSemester(), student);
+                        UUID token = UUID.randomUUID();
+                        otpService.generateAndSendOtp(token, String.valueOf(student.getId()), "STUDENT",
+                                new UserData(student));
+
+                        LoginResponse resp = new LoginResponse(true, token.toString(), "STUDENT",
+                                "Use the OTP sent to your email, to login", semesterService.getCurrentSemester());
                         // resp.setUserInfo(student);
 
                         return resp;
@@ -146,7 +155,7 @@ public class AuthenticationService {
 
             String token = jwtUtilities.generateToken(response.getData().getEmail());
             return new LoginResponse(true, token,
-                    response.getUserRole(), "Successfully logged in as " + response.getUserRole(),
+                    response.getUserRole(), "Successfully logged in as " + response.getData().getRole(),
                     semesterService.getCurrentSemester(), response.getData());
         }
 
