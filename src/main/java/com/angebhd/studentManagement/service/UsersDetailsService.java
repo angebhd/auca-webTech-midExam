@@ -35,17 +35,20 @@ public class UsersDetailsService implements UserDetailsService {
         Optional<Student> student = studentRepository.findByEmail(email);
         
         if(student.isPresent()){
+            System.out.println("Load student");
             return new StudentPrincipal(student.get());
         }
-
+        
         Optional<Teacher> teacher = teacherRepository.findByEmail(email);
-
+        
         if (teacher.isPresent()) {
+            System.out.println("Load teacher");
             return new TeacherPrincipal(teacher.get());
         }
-
+        
         Optional<Staff> staff = staffRepository.findByEmail(email);
         if (staff.isPresent()) {
+            System.out.println("Load staff");
             return new StaffPrincipal(staff.get());
         }
 

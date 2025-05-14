@@ -1,6 +1,7 @@
 package com.angebhd.studentManagement.service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -38,6 +39,7 @@ public class ApplicationService {
 
         application.setStatus(EApplicationStatus.PENDING);
         application.setDepartment(dept.get());
+        application.setApplicationDate(LocalDate.now());
         try {
             applicationRepository.save(application);
             return new OperationResult(true,
@@ -46,6 +48,10 @@ public class ApplicationService {
         } catch (Exception e) {
             return new OperationResult(false, "Application not saved");
         }
+    }
+
+    public List<Application> get (){
+        return applicationRepository.findAll();
     }
 
     public OperationResult approve(UUID id) {
@@ -59,7 +65,7 @@ public class ApplicationService {
             newStudent.setEmail(app.getEmail());
             newStudent.setEnrollmentDate(LocalDate.now());
             newStudent.setFirstName(app.getFirstName());
-            newStudent.setLastName("");
+            newStudent.setLastName(app.getLastName());
             newStudent.setPhone(app.getPhone());
             newStudent.setProgram(app.getProgram());
             newStudent.setStatus(EStudentStatus.ACTIVE);

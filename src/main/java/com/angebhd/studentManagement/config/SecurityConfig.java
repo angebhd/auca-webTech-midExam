@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -36,17 +37,22 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-       
+
         return http
                 .csrf(customizer -> customizer.disable())
                 // .sessionManagement(c ->
                 // c.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)) // shall try
                 // .NEVER
+                .cors(Customizer.withDefaults()) // ✅ enable CORS handling ??? why is it working here
+
                 .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .authorizeHttpRequests(au -> au
                         .requestMatchers("/auth/login", "/auth/register", "/auth/**").permitAll()
                         .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll() // for Oauth2
-                        .anyRequest().permitAll())
+                        .requestMatchers("/application/apply","/academicunit/get" ).permitAll() /// for applications
+                        // .anyRequest().authenticated()
+                        .anyRequest().permitAll()
+                        )
                 .formLogin(form -> form.disable())
                 .oauth2Login(oauth -> oauth
                         .userInfoEndpoint(userInfo -> userInfo

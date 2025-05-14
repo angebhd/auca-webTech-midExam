@@ -39,4 +39,9 @@ public class GradeController {
     public ResponseEntity<?> getStudent (@RequestParam int id){
         return new ResponseEntity<>(gradeService.getStudent(id), HttpStatus.OK);
     }
+
+    @GetMapping(value= "get/course")
+    public ResponseEntity<?> getCourse (@RequestParam UUID id){
+        return new ResponseEntity<>(gradeService.getByCourses(id), HttpStatus.OK);
+    }
 }

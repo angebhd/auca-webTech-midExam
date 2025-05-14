@@ -51,10 +51,9 @@ public class GradeService {
                 grade.setGrade(a.getGrade());
 
                 EGradeStatus status = EGradeStatus.FAILED;
-                if (a.getGrade() > 10) {
+                if (a.getGrade() >= 10) {
                     status = EGradeStatus.PASSED;
                 }
-
                 grade.setStatus(status);
 
                 grades.add(grade);
@@ -64,7 +63,6 @@ public class GradeService {
             if (gradesList.size() != grades.size()) {
                 int b = gradesList.size() - grades.size();
                 return new OperationResult(true, "Grade saved but " + b + " grades(s) have not been savedd");
-
             }
             return new OperationResult(true, "Grade saved");
 
@@ -90,6 +88,15 @@ public class GradeService {
             }
 
             return grades;
+        }
+        return null;
+    }
+
+    public List<Grades> getByCourses(UUID courseId){
+
+        Optional<OfferedCourse> course = offeredCourseRepository.findById(courseId);
+        if(course.isPresent()){
+            return gradesRepository.findByCourse(course.get());
         }
         return null;
     }

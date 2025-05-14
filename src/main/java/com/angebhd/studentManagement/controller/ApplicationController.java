@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,24 +18,33 @@ import com.angebhd.studentManagement.model.Application;
 import com.angebhd.studentManagement.service.ApplicationService;
 
 @RestController
-@RequestMapping(name = "application")
+@RequestMapping(value = "application")
 public class ApplicationController {
 
     @Autowired
     private ApplicationService applicationService;
 
-    @PostMapping(name = "apply")
+    @GetMapping(value = "get")
+    public ResponseEntity<?> get() {
+        try {
+            return new ResponseEntity<>(applicationService.get(), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.CONFLICT);
+        }
+    }
+
+    @PostMapping(value = "apply")
     public ResponseEntity<?> apply(@RequestBody Application application, @RequestParam String code) {
         OperationResult res = applicationService.apply(application, code);
         return GenericController.getResponse(res, HttpStatus.CREATED, HttpStatus.CONFLICT);
     }
 
-    @PostMapping(name = "approve")
+    @PostMapping(value = "approve")
     public ResponseEntity<?> approve(@RequestBody UUID id) {
         return GenericController.getResponse(applicationService.approve(id), HttpStatus.ACCEPTED, HttpStatus.CONFLICT);
     }
 
-    @PostMapping(name = "reject")
+    @PostMapping(value = "reject")
     public ResponseEntity<?> reject(@RequestBody UUID id) {
         return GenericController.getResponse(applicationService.reject(id), HttpStatus.ACCEPTED, HttpStatus.CONFLICT);
     }
