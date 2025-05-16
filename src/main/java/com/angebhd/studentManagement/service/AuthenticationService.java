@@ -158,8 +158,94 @@ public class AuthenticationService {
                     response.getUserRole(), "Successfully logged in as " + response.getData().getRole(),
                     semesterService.getCurrentSemester(), response.getData());
         }
-
         return new LoginResponse(false, response.getResult().toString());
+    }
+
+    public LoginResponse resetPasswordRequest(LoginRequest req) {
+        if (req.getLoginAs().equals("1")) {
+            Optional<Teacher> t = teacherRepository.findByEmail(req.getUsername());
+            if (t.isPresent()) {
+                Teacher teacher = t.get();
+
+                UUID token = UUID.randomUUID();
+                otpService.generateAndSendPasswordResetOtp(token, String.valueOf(teacher.getEmail()), "TEACHER",
+                        new UserData(teacher));
+
+                return new LoginResponse(true, "Check the OTP in your email to reset password", token.toString());
+
+            }
+        } else if (req.getLoginAs().equals("2")) {
+
+            /* STaff */
+            Optional<Staff> st = staffRepository.findByEmail(req.getUsername());
+            if (st.isPresent()) {
+                Staff staff = st.get();
+
+                UUID token = UUID.randomUUID();
+                otpService.generateAndSendPasswordResetOtp(token, String.valueOf(staff.getEmail()), "STAFF",
+                        new UserData(staff));
+                return new LoginResponse(true, "Check the OTP in your email to reset password", token.toString());
+
+            }
+
+        } else {
+
+            if (isInteger(req.getUsername())) {
+                Optional<Student> st = studentRepository.findById(Integer.parseInt(req.getUsername()));
+                if (st.isPresent()) {
+                    Student student = st.get();
+                    UUID token = UUID.randomUUID();
+                    otpService.generateAndSendPasswordResetOtp(token, String.valueOf(student.getId()), "STUDENT",
+                            new UserData(student));
+                    return new LoginResponse(true, "Check the OTP in your email to reset password", token.toString());
+
+                }
+            } else {
+                Optional<Student> st = studentRepository.findByEmail(req.getUsername());
+                if (st.isPresent()) {
+                    Student student = st.get();
+                    UUID token = UUID.randomUUID();
+                    otpService.generateAndSendPasswordResetOtp(token, String.valueOf(student.getId()), "STUDENT",
+                            new UserData(student));
+
+                    return new LoginResponse(true, "Check the OTP in your email to reset password", token.toString());
+
+                }
+            }
+        }
+        return new LoginResponse(false, "username not found");
+    }
+
+    public LoginResponse validatePasswordResetOTP(UUID otpId, String otp, String newPassword) {
+        OtpValidationResponse<UserData> response = otpService.validateOtp(otpId, otp);
+        if (response.getResult().equals(OtpValidationResult.SUCCESS)) {
+            UserData data = response.getData();
+
+            if (data.getRole().equals("STUDENT")) {
+                Optional<Student> student = studentRepository.findById(Integer.parseInt(data.getId()));
+                if (student.isPresent()) {
+                    student.get().setPassword(encoder.encode(newPassword));
+                    studentRepository.save(student.get());
+                    return new LoginResponse(true, "Password reset successfully");
+                }
+            } else if (data.getRole().equals("TEACHER")) {
+                Optional<Teacher> teacher = teacherRepository.findByEmail(data.getEmail());
+                if (teacher.isPresent()) {
+                    teacher.get().setPassword(encoder.encode(newPassword));
+                    teacherRepository.save(teacher.get());
+                    return new LoginResponse(true, "Password reset successfully");
+                }
+            } else {
+                Optional<Staff> staff = staffRepository.findByEmail(data.getEmail());
+                if (staff.isPresent()) {
+                    staff.get().setPassword(encoder.encode(newPassword));
+                    staffRepository.save(staff.get());
+                    return new LoginResponse(true, "Password reset successfully");
+                }
+                return new LoginResponse(false, "Failed to reset password");
+            }
+        }
+        return new LoginResponse(false, "Failed to reset password");
     }
 
     private boolean isInteger(String str) {

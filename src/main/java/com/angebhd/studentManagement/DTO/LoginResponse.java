@@ -22,6 +22,12 @@ public class LoginResponse {
         this.message = message;
     }
 
+    public LoginResponse(boolean success, String message, String token) { 
+        this.success = success;
+        this.message = message;
+        this.token = token;
+    }
+
     public LoginResponse(boolean success, String token, String role, String message, Semester semester) {
         this.token = token;
         this.role = role;
