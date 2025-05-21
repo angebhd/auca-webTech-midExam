@@ -41,7 +41,13 @@ public class OfferedCourseController {
     }
 
     @GetMapping(value = "get")
-    public ResponseEntity<?> get() {
+    public ResponseEntity<?> get(@RequestParam(required = false) UUID id) {
+
+        if (id != null) {
+        return new ResponseEntity<>(offeredCourseService.get(id), HttpStatus.OK);
+
+        }
+
         return new ResponseEntity<>(offeredCourseService.get(), HttpStatus.OK);
     }
 

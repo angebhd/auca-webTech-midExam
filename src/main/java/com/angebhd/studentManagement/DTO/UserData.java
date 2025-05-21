@@ -27,7 +27,6 @@ public class UserData {
         this.setLastName(st.getLastName());
         this.setId(""+ st.getId());
         this.setEmail(st.getEmail());
-
         if (st.getDepartment() != null) {
             this.setFaculty(st.getDepartment().getParent().getName());
             this.setDepartment(st.getDepartment().getName());
@@ -49,13 +48,11 @@ public class UserData {
     }
 
     public UserData(Teacher st) {
-
         this.setFirstName(st.getFirstName());
         this.setLastName(st.getLastName());
         this.setId(st.getEmail());
         this.setEmail(st.getEmail());
         this.setQualification(st.getQualification().toString());
-
         this.setRole(st.getRole().toString());
     }
 

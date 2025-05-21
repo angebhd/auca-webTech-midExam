@@ -17,4 +17,6 @@ public interface StudentRegistrationRepository extends JpaRepository<StudentRegi
     Optional<StudentRegistration> findByStudentAndSemester(Student student, Semester semester);
 
     List<StudentRegistration> findByCourses(List<OfferedCourse> courses);
+
+    List<StudentRegistration> findByStudent(Student student);
 }

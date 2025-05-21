@@ -13,4 +13,5 @@ public class GradeFormat {
 
     private int id;
     private double grade;
+    // private UUID uuid;
 }

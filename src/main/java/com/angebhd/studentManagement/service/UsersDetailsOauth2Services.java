@@ -45,8 +45,8 @@ public class UsersDetailsOauth2Services extends DefaultOAuth2UserService {
 
         Optional<Teacher> teacher = teacherRepository.findByEmail(email);
         if (teacher.isPresent()) {
-        return oAuth2User;
-            
+            return oAuth2User;
+
         }
 
         Optional<Staff> staff = staffRepository.findByEmail(email);

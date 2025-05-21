@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -61,7 +60,26 @@ public class AuthenticationController {
         }
     }
 
+    @PostMapping(value = "resetpassword")
+    public ResponseEntity<?> resetPassword(@RequestBody LoginRequest loginRequest) {
+        LoginResponse res = authenticationService.resetPasswordRequest(loginRequest);
+        if (res.isSuccess()) {
+            return new ResponseEntity<>(res, HttpStatusCode.valueOf(200));
+        } else {
+            return new ResponseEntity<>(res, HttpStatusCode.valueOf(406));
+        }
+    }
 
+
+    @PostMapping(value = "resetpassword/otpvalidation")
+    public ResponseEntity<?> changePassword(@RequestParam String otp, @RequestParam UUID otpID, @RequestBody String password) {
+        LoginResponse res = authenticationService.validatePasswordResetOTP(otpID, otp, password);
+        if (res.isSuccess()) {
+            return new ResponseEntity<>(res, HttpStatusCode.valueOf(200));
+        } else {
+            return new ResponseEntity<>(res, HttpStatusCode.valueOf(406));
+        }
+    }
 
     @GetMapping(value = "oauth2/success")
     public void oauth2LoginSuccess(HttpServletResponse response, HttpServletRequest request,

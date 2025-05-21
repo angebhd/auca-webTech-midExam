@@ -46,7 +46,6 @@ public class AttendanceService {
                 attendance.setCourse(offeredCourse);
                 attendance.setDate(LocalDate.now());
                 attendance.setStatus(a.getStatus());
-
                 attendances.add(attendance);
             }
             attendaceRepository.saveAll(attendances);
@@ -60,7 +59,6 @@ public class AttendanceService {
         } else {
 
             return new OperationResult(false, "Course not found");
-
         }
 
     }

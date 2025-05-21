@@ -59,22 +59,36 @@ public class JWTFilter extends OncePerRequestFilter {
             }
 
             filterChain.doFilter(req, res);
+            return;
         } catch (io.jsonwebtoken.ExpiredJwtException e) {
-            writeErrorResponse(res, HttpServletResponse.SC_UNAUTHORIZED, "Token has expired."); //401
+            System.out.println("Exepired Token");
+            writeErrorResponse(res, HttpServletResponse.SC_UNAUTHORIZED, "Token has expired."); // 401
             return;
         } catch (io.jsonwebtoken.JwtException e) {
+            System.out.println("invalid Token");
             writeErrorResponse(res, HttpServletResponse.SC_UNAUTHORIZED, "Invalid token.");
             return;
         } catch (Exception e) {
-            writeErrorResponse(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error occurred."); //500
+            System.out.println("JWT Filter exception");
+            writeErrorResponse(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error occurred."); // 500
             return;
         }
     }
 
     private void writeErrorResponse(HttpServletResponse res, int statusCode, String message) throws IOException {
+        System.out.println("Committed response: " + res.isCommitted());
+
+        /// TO solve, need to implement is properly (Use the CORS class)
+        res.setHeader("Access-Control-Allow-Origin", "*");
+        res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        res.setHeader("Access-Control-Max-Age", "3600");
+
         res.setStatus(statusCode);
         res.setContentType("application/json");
         res.setCharacterEncoding("UTF-8");
         res.getWriter().write("{\"message\": \"" + message + "\"}");
+        res.getWriter().flush();
+
     }
 }

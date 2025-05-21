@@ -12,6 +12,5 @@ public interface StaffRepository extends JpaRepository<Staff, UUID> {
 
     boolean existsByFirstNameAndLastNameAndEmail(String firstName, String lastName, String email);
     boolean existsByEmail(String email);
-    Optional<Staff> findByEmail(String email);
-    
+    Optional<Staff> findByEmail(String email);    
 }

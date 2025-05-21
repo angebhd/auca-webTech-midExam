@@ -80,6 +80,10 @@ public class OfferedCourseService {
         return offeredCourseRepository.findAll();
     }
 
+     public OfferedCourse get(UUID id) {
+        return offeredCourseRepository.findById(id).get();
+    }
+
     public OperationResult update(OfferedCourse offeredCourse, UUID courseId, UUID semesterId, UUID teacherId) {
 
         Optional<OfferedCourse> old = offeredCourseRepository.findById(offeredCourse.getId());
