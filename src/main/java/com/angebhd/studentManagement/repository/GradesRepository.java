@@ -16,4 +16,5 @@ public interface GradesRepository extends JpaRepository<Grades, UUID>{
     List<Grades> findByStudent(Student student);
     List<Grades> findByCourse(OfferedCourse course);
     
+    
 }

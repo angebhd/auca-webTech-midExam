@@ -13,6 +13,7 @@ import com.angebhd.studentManagement.DTO.UserData;
 import com.angebhd.studentManagement.model.Staff;
 import com.angebhd.studentManagement.model.Student;
 import com.angebhd.studentManagement.model.Teacher;
+import com.angebhd.studentManagement.model.enumeration.ETeacherRole;
 import com.angebhd.studentManagement.repository.StaffRepository;
 import com.angebhd.studentManagement.repository.StudentRepository;
 import com.angebhd.studentManagement.repository.TeacherRepository;
@@ -228,7 +229,7 @@ public class AuthenticationService {
                     studentRepository.save(student.get());
                     return new LoginResponse(true, "Password reset successfully");
                 }
-            } else if (data.getRole().equals("TEACHER")) {
+            } else if (data.getRole().equals(ETeacherRole.ASSISTANT.toString()) || data.getRole().equals(ETeacherRole.LECTURER.toString())) {
                 Optional<Teacher> teacher = teacherRepository.findByEmail(data.getEmail());
                 if (teacher.isPresent()) {
                     teacher.get().setPassword(encoder.encode(newPassword));
@@ -245,7 +246,7 @@ public class AuthenticationService {
                 return new LoginResponse(false, "Failed to reset password");
             }
         }
-        return new LoginResponse(false, "Failed to reset password");
+        return new LoginResponse(false, "Failed to reset password, username not found");
     }
 
     private boolean isInteger(String str) {

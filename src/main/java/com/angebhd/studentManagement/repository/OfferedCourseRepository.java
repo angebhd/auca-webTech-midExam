@@ -18,5 +18,6 @@ public interface OfferedCourseRepository extends JpaRepository<OfferedCourse, UU
 
     List<OfferedCourse> findByTeacher(Teacher teacher);
 
+
     
 }
