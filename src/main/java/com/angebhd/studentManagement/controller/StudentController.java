@@ -37,7 +37,6 @@ public class StudentController {
     public ResponseEntity<?> get(@RequestParam(required = false) Integer id) {
         if (id != null) {
             return new ResponseEntity<>(studentService.get(id), HttpStatus.OK);
-
         }
         return new ResponseEntity<>(studentService.get(), HttpStatus.OK);
     }

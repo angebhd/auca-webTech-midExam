@@ -1,5 +1,7 @@
 package com.angebhd.studentManagement.controller;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,5 +28,11 @@ public class GlobalSearchController {
     public ResponseEntity<?> studentSearch(@RequestParam String id) {
 
         return new ResponseEntity<>(globalSearchService.studentSearch(id), HttpStatus.OK);
+    }
+
+     @GetMapping(value = "teacher")
+    public ResponseEntity<?> teacherSearch(@RequestParam UUID id) {
+
+        return new ResponseEntity<>(globalSearchService.teacherSearch(id), HttpStatus.OK);
     }
 }

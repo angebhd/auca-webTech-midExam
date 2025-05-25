@@ -1,12 +1,14 @@
 package com.angebhd.studentManagement.service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.angebhd.studentManagement.DTO.GlobalSearchObject;
 import com.angebhd.studentManagement.model.Student;
+import com.angebhd.studentManagement.model.Teacher;
 import com.angebhd.studentManagement.repository.AcademicUnitRepository;
 import com.angebhd.studentManagement.repository.AttendaceRepository;
 import com.angebhd.studentManagement.repository.CourseRepository;
@@ -44,7 +46,6 @@ public class GlobalSearchService {
     @Autowired
     private AcademicUnitRepository academicUnitRepository;
 
-    
     @Autowired
     private FeesRepository feesRepository;
 
@@ -56,7 +57,6 @@ public class GlobalSearchService {
 
     @Autowired
     private StudentRegistrationRepository studentRegistrationRepository;
-
 
     public GlobalSearchObject adminSearch() {
         GlobalSearchObject globalSearchObject = new GlobalSearchObject();
@@ -78,11 +78,34 @@ public class GlobalSearchService {
 
     public GlobalSearchObject studentSearch(String id) {
         Optional<Student> st = studentRepository.findById(Integer.parseInt(id));
-        if(st.isEmpty()) return null;
+        if (st.isEmpty())
+            return null;
 
-        return new GlobalSearchObject(studentRegistrationRepository.findByStudent(st.get()),courseRepository.findAll() ,feesRepository.findAll(), paymentRepository.findAll());
+        return new GlobalSearchObject(studentRegistrationRepository.findByStudent(st.get()), courseRepository.findAll(),
+                feesRepository.findAll(), paymentRepository.findAll());
 
     }
 
+    public GlobalSearchObject teacherSearch(UUID id) {
+        Optional<Teacher> st = teacherRepository.findById(id);
+        if (st.isEmpty())  return null;
+
+        GlobalSearchObject globalSearchObject = new GlobalSearchObject();
+        globalSearchObject.setStudents(studentRepository.findAll());
+        globalSearchObject.setTeachers(teacherRepository.findAll());
+        globalSearchObject.setStaffs(staffRepository.findAll());
+
+        globalSearchObject.setOfferedCourses(offeredCourseRepository.findAll());
+        globalSearchObject.setCourses(courseRepository.findAll());
+
+        globalSearchObject.setAcademicUnits(academicUnitRepository.findAll());
+        globalSearchObject.setSemesters(semesterRepository.findAll());
+        globalSearchObject.setFees(feesRepository.findAll());
+        globalSearchObject.setAttendances(attendaceRepository.findAll());
+        globalSearchObject.setPayments(paymentRepository.findAll());
+        globalSearchObject.setRegistrations(studentRegistrationRepository.findAll());
+        return globalSearchObject;
+
+    }
 
 }

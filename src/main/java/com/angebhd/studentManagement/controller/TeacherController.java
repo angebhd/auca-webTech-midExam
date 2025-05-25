@@ -35,7 +35,11 @@ public class TeacherController {
     }
 
     @GetMapping(value = "get")
-    public ResponseEntity<?> get (){
+    public ResponseEntity<?> get (@RequestParam(required = false) UUID id){
+        if (id != null) {
+            return new ResponseEntity<>(teacherService.get(id), HttpStatus.OK);
+        }
+
         return new ResponseEntity<>(teacherService.get(), HttpStatus.OK);
     }
 
