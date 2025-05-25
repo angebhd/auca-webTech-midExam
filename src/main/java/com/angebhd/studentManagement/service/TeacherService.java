@@ -23,6 +23,9 @@ public class TeacherService {
     @Autowired
     private OfferedCourseRepository offeredCourseRepository;
 
+    @Autowired
+    private SemesterService semesterService;
+
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(8);
 
     public OperationResult add(Teacher teacher) {
@@ -34,6 +37,10 @@ public class TeacherService {
 
     public List<Teacher> get() {
         return teacherRepository.findAll();
+    }
+
+      public Teacher get(UUID id) {
+        return teacherRepository.findById(id).get();
     }
 
     public OperationResult update(Teacher teacher) {
@@ -75,7 +82,7 @@ public class TeacherService {
 
         if (t.isPresent()) {
             Teacher teacher = t.get();
-            List<OfferedCourse> courses = offeredCourseRepository.findByTeacher(teacher);
+            List<OfferedCourse> courses = offeredCourseRepository.findByTeacherAndSemester(teacher, semesterService.getCurrentSemester());
 
             for (OfferedCourse course : courses) {
                 course.setTeacher(null);

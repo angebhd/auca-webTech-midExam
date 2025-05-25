@@ -45,6 +45,8 @@ public class AcademicUnitService {
         return academicUnitRepository.findAll();
     }
 
+   
+
     public OperationResult update (AcademicUnit academicUnit, String parentCode){
         Optional<AcademicUnit> acad = academicUnitRepository.findById(academicUnit.getId());
 

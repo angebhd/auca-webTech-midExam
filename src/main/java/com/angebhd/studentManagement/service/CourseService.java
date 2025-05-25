@@ -2,6 +2,7 @@ package com.angebhd.studentManagement.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,6 +41,9 @@ public class CourseService {
 
     public List<Course> get() {
         return courseRepository.findAll();
+    }
+    public Course get(UUID id) {
+        return courseRepository.findById(id).get();
     }
 
     public OperationResult update(Course course, String academicUnitCode) {

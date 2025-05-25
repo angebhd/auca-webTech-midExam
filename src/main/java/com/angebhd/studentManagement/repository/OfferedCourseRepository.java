@@ -17,6 +17,7 @@ public interface OfferedCourseRepository extends JpaRepository<OfferedCourse, UU
     boolean existsBySemesterAndCourseAndGroup(Semester semester, Course course, char group);
 
     List<OfferedCourse> findByTeacher(Teacher teacher);
+    List <OfferedCourse> findByTeacherAndSemester(Teacher teacher,Semester semester);
 
 
     

@@ -20,6 +20,7 @@ public class UserData {
     private String program;
     private String role;
     private String qualification;
+    private String uuid;
 
     public UserData(Student st) {
 
@@ -42,7 +43,7 @@ public class UserData {
         this.setId(st.getEmail());
         this.setEmail(st.getEmail());
 
-
+        this.setUuid(st.getId().toString());
 
         this.setRole(st.getRole().toString());
     }
@@ -54,6 +55,7 @@ public class UserData {
         this.setEmail(st.getEmail());
         this.setQualification(st.getQualification().toString());
         this.setRole(st.getRole().toString());
+        this.setUuid(st.getId().toString());
     }
 
 }

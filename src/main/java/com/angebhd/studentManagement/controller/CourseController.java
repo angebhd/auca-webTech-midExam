@@ -1,5 +1,7 @@
 package com.angebhd.studentManagement.controller;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +36,10 @@ public class CourseController {
     }
 
     @GetMapping(value = "get")
-    public ResponseEntity<?> get (){
+    public ResponseEntity<?> get (@RequestParam(required = false) UUID id){
+        if (id != null) {
+            return new ResponseEntity<>(courseService.get(id), HttpStatus.OK);
+        }
         return new ResponseEntity<>(courseService.get(), HttpStatus.OK);
     }
 

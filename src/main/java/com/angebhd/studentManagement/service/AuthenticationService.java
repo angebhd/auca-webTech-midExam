@@ -172,7 +172,7 @@ public class AuthenticationService {
                 otpService.generateAndSendPasswordResetOtp(token, String.valueOf(teacher.getEmail()), "TEACHER",
                         new UserData(teacher));
 
-                return new LoginResponse(true, "Check the OTP in your email to reset password", token.toString());
+                return new LoginResponse(true, "Check your email to reset password", token.toString());
 
             }
         } else if (req.getLoginAs().equals("2")) {
@@ -246,7 +246,7 @@ public class AuthenticationService {
                 return new LoginResponse(false, "Failed to reset password");
             }
         }
-        return new LoginResponse(false, "Failed to reset password, username not found");
+        return new LoginResponse(false, "OTP validation failed, it may have expired");
     }
 
     private boolean isInteger(String str) {
