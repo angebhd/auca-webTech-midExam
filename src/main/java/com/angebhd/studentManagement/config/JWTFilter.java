@@ -70,6 +70,7 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         } catch (Exception e) {
             System.out.println("JWT Filter exception");
+            e.printStackTrace();
             writeErrorResponse(res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Server error occurred."); // 500
             return;
         }

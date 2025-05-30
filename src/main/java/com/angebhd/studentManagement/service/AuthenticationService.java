@@ -163,7 +163,6 @@ public class AuthenticationService {
     }
 
     public LoginResponse resetPasswordRequest(LoginRequest req) {
-        if (req.getLoginAs().equals("1")) {
             Optional<Teacher> t = teacherRepository.findByEmail(req.getUsername());
             if (t.isPresent()) {
                 Teacher teacher = t.get();
@@ -175,12 +174,11 @@ public class AuthenticationService {
                 return new LoginResponse(true, "Check your email to reset password", token.toString());
 
             }
-        } else if (req.getLoginAs().equals("2")) {
 
             /* STaff */
-            Optional<Staff> st = staffRepository.findByEmail(req.getUsername());
-            if (st.isPresent()) {
-                Staff staff = st.get();
+            Optional<Staff> sta = staffRepository.findByEmail(req.getUsername());
+            if (sta.isPresent()) {
+                Staff staff = sta.get();
 
                 UUID token = UUID.randomUUID();
                 otpService.generateAndSendPasswordResetOtp(token, String.valueOf(staff.getEmail()), "STAFF",
@@ -189,7 +187,6 @@ public class AuthenticationService {
 
             }
 
-        } else {
 
             if (isInteger(req.getUsername())) {
                 Optional<Student> st = studentRepository.findById(Integer.parseInt(req.getUsername()));
@@ -212,7 +209,7 @@ public class AuthenticationService {
                     return new LoginResponse(true, "Check the OTP in your email to reset password", token.toString());
 
                 }
-            }
+            
         }
         return new LoginResponse(false, "username not found");
     }

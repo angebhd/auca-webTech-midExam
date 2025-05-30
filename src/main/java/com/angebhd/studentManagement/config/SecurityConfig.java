@@ -50,8 +50,8 @@ public class SecurityConfig {
                         .requestMatchers("/auth/login", "/auth/register", "/auth/**").permitAll()
                         .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll() // for Oauth2
                         .requestMatchers("/application/apply","/academicunit/get" ).permitAll() /// for applications
-                        // .anyRequest().authenticated()
-                        .anyRequest().permitAll()
+                        .anyRequest().authenticated()
+                        // .anyRequest().permitAll()
                         )
                 .formLogin(form -> form.disable())
                 .oauth2Login(oauth -> oauth
